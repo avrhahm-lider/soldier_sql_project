@@ -13,13 +13,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/avrhahm-lider/soldier_sql_project/issues"
   },
   "homepage": "https://github.com/avrhahm-lider/soldier_sql_project#readme",
   "dependencies": {
     "express": "^5.2.1",
-    "mysql2": "^3.22.6"
+    "mysql2": "^3.22.6",
+    "zod": "^4.4.3"
   }
 }

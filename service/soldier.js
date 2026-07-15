@@ -4,8 +4,11 @@ import z from "zod";
 
 async function creatSoldier(body) {
   const secc = Soldier.safeParse(body);
-  if (!secc.success) return { status: 400, message: secc.error.issues[0] };
-  const res = await db.creatSoldier(body);
+  if (!secc.success)
+    return { status: 400, data: { message: secc.error.issues[0].message } };
+  console.log(secc);
+
+  const res = await db.creatSoldier(secc.data);
   return { status: 200, data: res };
 }
 
@@ -20,30 +23,47 @@ async function getSoldier(qp) {
 }
 
 async function getByID(id) {
-  if (!(await isId(id))) return { status: 404, message: "soldier not found" };
+  const isSoldier = await isId(id);
+  if (!isSoldier[0][0]["count(*)"])
+    return { status: 404, data: { message: "soldier not found" } };
   const soldier = await db.getByID(id);
   return { status: 200, data: soldier };
 }
 
 async function updateSoldier(id, body) {
-  if (!(await isId(id))) return { status: 404, message: "soldier not found" };
+  const isSoldier = await isId(id);
+  if (!isSoldier[0][0]["count(*)"])
+    return { status: 404, data: { message: "soldier not found" } };
   const secc = UpdateSoldier.safeParse(body);
-  if (!secc.success) return { status: 400, message: secc.error.issues[0] };
-  const res = db.updateSoldier(id, body);
+  if (!secc.success) return { status: 400, data: { message: secc.error.issues[0] } };
+  const res = await db.updateSoldier(id, secc.data);
+  return { status: 200, data: res };
 }
 
-async function deleteSoldier() {
-  if (!(await isId(id))) return { status: 404, message: "soldier not found" };
-  const res = await db.deleteByID(id);
+async function deleteSoldier(id) {
+  const isSoldier = await isId(id);
+  if (!isSoldier[0][0]["count(*)"])
+    return { status: 404, data: { message: "soldier not found" } };
+  const res = await db.deleteByID(+id);
   return { status: 200, data: res };
 }
 
 async function updateStatus(id, body) {
-  if (!(await isId(id))) return { status: 404, message: "soldier not found" };
+  const isSoldier = await isId(id);
+  if (!isSoldier[0][0]["count(*)"])
+    return { status: 404, data: { message: "soldier not found" } };
   const { status } = body;
-  if (!status) if (!secc.success) return { status: 400, message: "invalid body" };
+  if (!status)
+    return { status: 400, data: { message: "invalid body" } };
   const res = await db.updateStatus(id, status);
   return { status: 200, data: res };
 }
 
-export default {creatSoldier,getSoldier, getByID, updateSoldier, deleteSoldier,updateStatus }
+export default {
+  creatSoldier,
+  getSoldier,
+  getByID,
+  updateSoldier,
+  deleteSoldier,
+  updateStatus,
+};

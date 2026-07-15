@@ -1,4 +1,4 @@
-function idValidtion(id){
+export function idValidtion(id){
     if (isNaN(+id) || id < 0)
         return false
     return true

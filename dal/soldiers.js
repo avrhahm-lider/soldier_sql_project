@@ -31,14 +31,17 @@ async function creatSoldier(soldier = {}) {
   return res
 }
 
-async function getSoldier(getBy) {
-  if (getBy.length === 0) {
+async function getSoldier() {
     const [res] = await pool.execute(`SELECT * FROM soldiers`);
     return res
-  }
-  const [res] =  await pool.execute(`SELECT * FROM soldiers WHERE ${getBy}`);
-  return res
 }
+
+
+async function getSoldierParm(whereClause, values) {
+
+    const [res] = await pool.execute(`SELECT * FROM soldiers WHERE ${whereClause}`, values);
+    return res
+  }
 
 async function getByID(id) {
   const [res] =  await pool.execute("SELECT * FROM soldiers WHERE id=?", [id]);
@@ -72,4 +75,5 @@ export default {
   deleteByID,
   updateStatus,
   updateSoldier,
+  getSoldierParm
 };

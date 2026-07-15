@@ -1,5 +1,5 @@
 import db, { isId } from "../dal/soldiers.js";
-import { Soldier, UpdateSoldier } from "../utils/zodValidtion.js";
+import { Soldier, UpdateSoldier, QueryParmas } from "../utils/zodValidtion.js";
 import z from "zod";
 
 async function creatSoldier(body) {
@@ -12,13 +12,18 @@ async function creatSoldier(body) {
   return { status: 200, data: res };
 }
 
-async function getSoldier(qp) {
-  const options = ["unit", "rank", "status"];
-  let getBy = "";
-  for (let i = 0; i < 3; i++) {
-    if (qp[options[i]]) getBy += `${options[i]}=${qp[options[i]]}`;
+async function getSoldier(filters = {}) {
+  const keys = Object.keys(filters).filter((key) => filters[key] !== null);
+
+    if (keys.length === 0) {
+    const soldier = await db.getSoldier();
+    return { status: 200, data: soldier };
   }
-  const soldier = await db.getSoldier(getBy);
+
+  const whereClause = keys.map((key) => `\`${key}\` = ?`).join(" AND ");
+  const values = keys.map((key) => filters[key]);
+
+  const soldier = await db.getSoldierParm(whereClause, values);
   return { status: 200, data: soldier };
 }
 
@@ -53,8 +58,7 @@ async function updateStatus(id, body) {
   if (!isSoldier[0][0]["count(*)"])
     return { status: 404, data: { message: "soldier not found" } };
   const { status } = body;
-  if (!status)
-    return { status: 400, data: { message: "invalid body" } };
+  if (!status) return { status: 400, data: { message: "invalid body" } };
   const res = await db.updateStatus(id, status);
   return { status: 200, data: res };
 }

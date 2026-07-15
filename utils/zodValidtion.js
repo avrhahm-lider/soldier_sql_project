@@ -17,3 +17,10 @@ export const UpdateSoldier = z.object({
     age: z.number().int().positive(),
     status : z.enum(["active", "deactive"])
 })
+
+export const QueryParmas = z.object({
+    unit: z.string().nullable().default(null),
+    role : z.string().nullable().default(null),
+    rank : z.string().nullable().default(null),
+    status : z.enum(["active", "deactive"]).nullable().default(null)
+})
